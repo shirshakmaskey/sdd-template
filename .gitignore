@@ -1,0 +1,51 @@
+# ── Build ──
+build/
+out/
+dist/
+target/
+*.class
+*.jar
+*.war
+*.dll
+*.exe
+*.o
+*.so
+node_modules/
+.next/
+.nuxt/
+
+# ── IDE ──
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.fleet/
+*.swp
+*.swo
+*~
+
+# ── Environment ──
+.env
+.env.local
+.env.*.local
+*.pem
+keys/
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Runtime ──
+data/uploads/
+logs/
+tmp/
+
+# ── Test ──
+test-results/
+coverage/
+.testcontainers.properties
+
+# ── AI Agent ──
+.gemini/
