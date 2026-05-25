@@ -37,7 +37,7 @@ git init
 
 ## The Bootstrap Workflow
 
-When you start a conversation with an AI agent in a fresh project, the `AGENTS.md` detects bootstrap mode and guides you through **9 interactive steps**:
+When you start a conversation with an AI agent in a fresh project, the `AGENTS.md` detects bootstrap mode and guides you through **11 interactive steps**:
 
 | Step | What Happens | Output |
 |------|-------------|--------|
@@ -49,7 +49,9 @@ When you start a conversation with an AI agent in a fresh project, the `AGENTS.m
 | 6 | **Roles** — Define conventions per engineering domain | `docs/roles/*.md` |
 | 7 | **Skills** — Create step-by-step task recipes | `docs/skills/*.md` |
 | 8 | **STATUS.md** — Generate the project health tracker | `docs/STATUS.md` |
-| 9 | **Finalize** — Update AGENTS.md with project-specific rules | `AGENTS.md` |
+| 9 | **Utilities & Dead Code** — Generate DRY Bible and dead code tracker | `docs/UTILITIES_REFERENCE.md`, `docs/DEAD_CODE_REFERENCES.md` |
+| 10 | **Agent Workflows** — Set up platform-specific workflow files | `docs/workflows/*.md` → platform dir |
+| 11 | **Finalize** — Update AGENTS.md with project-specific rules | `AGENTS.md` |
 
 Each step is interactive — the agent generates a document, you review and approve, then it moves to the next step.
 
@@ -69,11 +71,14 @@ your-project/
 ├── docs/
 │   ├── CHANGELOG.md       ← Audit trail
 │   ├── STATUS.md          ← Project health tracker
+│   ├── UTILITIES_REFERENCE.md  ← DRY Bible — utility function registry
+│   ├── DEAD_CODE_REFERENCES.md ← Dead code & deprecated mock tracker
 │   ├── adr/               ← Architecture Decision Records
 │   ├── phases/            ← Phased implementation guides
 │   ├── roles/             ← Engineering conventions per domain
 │   ├── skills/            ← Step-by-step task recipes
-│   └── specs/             ← Engineering contracts (API, DB, events, prompts)
+│   ├── specs/             ← Engineering contracts (API, DB, events, prompts)
+│   └── workflows/         ← Agent workflow recipes (platform-agnostic)
 └── scripts/
     └── bootstrap-checklist.md  ← Manual fallback (no-AI version)
 ```
