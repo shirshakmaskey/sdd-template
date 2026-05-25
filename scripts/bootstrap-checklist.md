@@ -102,7 +102,37 @@
 - [ ] Calculate total features and tests
 - [ ] Set all statuses to ⬜
 
-## Step 9: Finalize AGENTS.md
+## Step 9: Utilities Reference & Dead Code Tracker
+
+- [ ] Update `docs/UTILITIES_REFERENCE.md`:
+  - [ ] Replace `{{PROJECT_NAME}}` with actual project name
+  - [ ] Replace `{{BACKEND_SRC}}` and `{{FRONTEND_SRC}}` with project source directories
+  - [ ] Replace `{{EXT}}` with primary file extension
+  - [ ] Add initial utility entries (error classes, logger) if identified
+- [ ] Update `docs/DEAD_CODE_REFERENCES.md`:
+  - [ ] Replace `{{PROJECT_NAME}}` with actual project name
+  - [ ] Tables start empty (populated during development)
+
+## Step 10: Agent Workflows
+
+- [ ] Determine AI coding platform(s) being used:
+  - [ ] Gemini/Jules → `.agents/workflows/`
+  - [ ] Cursor → `.cursor/rules/workflows/`
+  - [ ] Claude Code → `.claude/workflows/`
+  - [ ] Other → use `docs/workflows/` directly
+- [ ] Replace all `{{PLACEHOLDER}}` values in `docs/workflows/*.md`:
+  - [ ] `{{TEST_COMMAND}}` → your test runner command
+  - [ ] `{{LINT_COMMAND}}` → your linter command
+  - [ ] `{{BACKEND_SRC}}` → backend source directory
+  - [ ] `{{FRONTEND_SRC}}` → frontend source directory
+  - [ ] `{{ORM_NAME}}` → your ORM/data access tool
+  - [ ] `{{DB_ROLE}}` → your database role file name
+  - [ ] `{{BACKEND_ROLE}}` → your backend role file name
+  - [ ] `{{FRONTEND_ROLE}}` → your frontend role file name
+- [ ] Copy resolved workflow files to platform-specific directory
+- [ ] Update platform config file if needed
+
+## Step 11: Finalize AGENTS.md
 
 - [ ] Replace `{{PROJECT_NAME}}` in `AGENTS.md`
 - [ ] Add Technology Stack table (from ADRs)

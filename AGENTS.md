@@ -8,13 +8,16 @@ This project is built using **Spec-Driven Development (SDD)**. All engineering w
 
 ```
 docs/
-├── CHANGELOG.md           ← Audit trail for all changes
-├── STATUS.md              ← Project health & feature tracker
-├── adr/                   ← Architecture Decision Records (technology choices — FINAL)
-├── phases/                ← Phased implementation guides (scope + acceptance tests)
-├── specs/                 ← Engineering contracts (API, events, database, prompts)
-├── roles/                 ← Conventions and patterns per engineering domain
-└── skills/                ← Step-by-step recipes for common tasks
+├── CHANGELOG.md              ← Audit trail for all changes
+├── STATUS.md                 ← Project health & feature tracker
+├── UTILITIES_REFERENCE.md    ← DRY Bible — registry of all utility functions
+├── DEAD_CODE_REFERENCES.md   ← Tracks deprecated code and unused mocks
+├── adr/                      ← Architecture Decision Records (technology choices — FINAL)
+├── phases/                   ← Phased implementation guides (scope + acceptance tests)
+├── specs/                    ← Engineering contracts (API, events, database, prompts)
+├── roles/                    ← Conventions and patterns per engineering domain
+├── skills/                   ← Step-by-step recipes for common tasks
+└── workflows/                ← Agent workflow recipes (platform-agnostic)
 ```
 
 **The specs are the source of truth.** If the code disagrees with a spec, the code is wrong — unless the spec needs updating, in which case follow the deviation process in `docs/skills/update-documentation.md`.
@@ -197,7 +200,50 @@ Generate each spec **one at a time**, present to user, wait for approval.
 4. Calculate total features and total tests.
 5. **Present to user for confirmation.**
 
-### Step 9: Finalize AGENTS.md
+### Step 9: Utilities Reference & Dead Code Tracker
+
+**Goal:** Generate the DRY Bible and dead code tracker.
+
+1. Update `docs/UTILITIES_REFERENCE.md`:
+   - Replace `{{PROJECT_NAME}}` with the actual project name.
+   - Replace `{{BACKEND_SRC}}` and `{{FRONTEND_SRC}}` with the project's source directories.
+   - Replace `{{EXT}}` with the project's primary file extension (e.g., `.js`, `.ts`, `.kt`).
+   - Add initial utility entries if any were identified during system design (e.g., error classes, logger).
+2. Update `docs/DEAD_CODE_REFERENCES.md`:
+   - Replace `{{PROJECT_NAME}}` with the actual project name.
+   - Tables start empty — they are populated during development.
+3. **Present to user for confirmation.**
+
+### Step 10: Agent Workflows
+
+**Goal:** Set up agent workflow files for the user's AI coding platform.
+
+1. **Detect or ask the user's AI platform(s).** Common platforms:
+   - **Gemini / Jules** → workflows go in `.agents/workflows/`
+   - **Cursor** → workflows go in `.cursor/rules/workflows/`
+   - **Claude Code** → workflows go in `.claude/workflows/`
+   - **Other/Unknown** → workflows stay in `docs/workflows/` (manual reference)
+
+2. **Replace all `{{PLACEHOLDER}}` values** in `docs/workflows/*.md` with project-specific values:
+   - `{{TEST_COMMAND}}` → e.g., `npm test`, `./gradlew test`, `pytest`
+   - `{{LINT_COMMAND}}` → e.g., `npx eslint src/`, `./gradlew detekt`, `flake8`
+   - `{{BACKEND_SRC}}` → e.g., `src/`, `app/`, `server/`
+   - `{{FRONTEND_SRC}}` → e.g., `client/src/`, `frontend/src/`
+   - `{{ORM_NAME}}` → e.g., `Prisma`, `TypeORM`, `SQLAlchemy`
+   - `{{DB_ROLE}}` → e.g., `postgres-engineer.md`, `mysql-engineer.md`
+   - `{{BACKEND_ROLE}}` → e.g., `node-backend.md`, `kotlin-backend.md`
+   - `{{FRONTEND_ROLE}}` → e.g., `react-frontend.md`, `nextjs-frontend.md`
+
+3. **Copy the resolved workflow files** from `docs/workflows/` to the platform-specific directory identified in step 1.
+
+4. **Update the platform config file** (if applicable):
+   - Cursor: Ensure `.cursorrules` references workflow files
+   - Claude: Ensure `CLAUDE.md` references workflow files
+   - Gemini: No extra config needed (auto-detected from `.agents/workflows/`)
+
+5. **Present to user for confirmation.**
+
+### Step 11: Finalize AGENTS.md
 
 **Goal:** Update this file with project-specific information.
 
@@ -221,9 +267,10 @@ Generate each spec **one at a time**, present to user, wait for approval.
 
 ### Bootstrap Complete! 🎉
 
-After all 9 steps, confirm to the user:
+After all 11 steps, confirm to the user:
 - Total documents generated
 - Summary of tech stack, phases, and roles
+- Agent workflows installed for their AI platform
 - Recommendation to commit all docs before starting Phase 1
 
 ---
@@ -276,6 +323,8 @@ When a user asks you to build, modify, or fix something, follow this exact workf
     - [ ] Update `.env.example` if new environment variables were added
     - [ ] Check off completed features in the phase README
     - [ ] Add entry to `docs/CHANGELOG.md`
+    - [ ] Update `docs/UTILITIES_REFERENCE.md` if any new utility was created
+    - [ ] Update `docs/DEAD_CODE_REFERENCES.md` if any code was deprecated
 15. **If any spec deviated from the original**, document the deviation in the CHANGELOG with a `[DEVIATION]` tag.
 
 ### Phase 5: Report
@@ -298,6 +347,9 @@ When a user asks you to build, modify, or fix something, follow this exact workf
 | New REST endpoint | `add-endpoint` → `write-e2e-test` → `update-documentation` |
 | New database table/column | `add-migration` → `write-e2e-test` → `update-documentation` |
 | New external service integration | `add-port-interface` → `add-endpoint` (if API-facing) → `write-e2e-test` → `update-documentation` |
+| New background job | `add-worker-job` → `write-e2e-test` → `update-documentation` |
+| New frontend component | `add-frontend-component` → `update-documentation` |
+| Full-stack feature (endpoint + DB + UI) | `add-migration` → `add-endpoint` → `add-frontend-component` → `write-e2e-test` → `update-documentation` |
 | Bug fix | Read relevant role → fix → `write-e2e-test` (regression test) → `update-documentation` |
 | Phase completion | `run-phase-completion` |
 
@@ -397,7 +449,9 @@ When starting work on any task, read these files in order:
 3. **Relevant spec files** — the contracts you must conform to
 4. **Relevant role files** — the conventions you must follow
 5. **Relevant skill files** — the step-by-step recipe to execute
-6. **Existing source code** — understand what's already built
+6. **`docs/UTILITIES_REFERENCE.md`** — check for existing utilities before writing new ones
+7. **`docs/DEAD_CODE_REFERENCES.md`** — avoid depending on deprecated code
+8. **Existing source code** — understand what's already built
 
 ---
 
