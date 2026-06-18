@@ -14,13 +14,14 @@ I want to start a new feature. Follow this exact process:
 
 Before writing any code, read and internalize these standards:
 
-4. **Role files** — Read ALL relevant roles in `docs/roles/`:
+4. **Rule files** — Read `docs/rules/` for always-on guardrails (security, coding-style, context-management, testing).
+5. **Role files** — Read ALL relevant roles in `docs/roles/`:
    - `{{BACKEND_ROLE}}` — Route → Service → Repository pattern, port interfaces
    - `{{FRONTEND_ROLE}}` — Component structure, API service pattern
    - `code-reviewer.md` — Review checklist (you must self-review against this)
    - `test-engineer.md` — E2E test conventions
-5. **DRY Bible** — Read `docs/UTILITIES_REFERENCE.md`. Before writing ANY utility or helper function, check if it already exists. If it does, import it. Never duplicate.
-6. **Dead Code Tracker** — Read `docs/DEAD_CODE_REFERENCES.md` to avoid depending on deprecated code.
+6. **DRY Bible** — Read `docs/UTILITIES_REFERENCE.md`. Before writing ANY utility or helper function, check if it already exists. If it does, import it. Never duplicate.
+7. **Dead Code Tracker** — Read `docs/DEAD_CODE_REFERENCES.md` to avoid depending on deprecated code.
 
 ## Phase 2: Coding Standards Enforcement
 
@@ -42,9 +43,17 @@ When writing code, enforce these rules at all times:
 
 ## Phase 3: Plan & Approve
 
-7. Identify the required skills from the Feature-to-Skills mapping in `AGENTS.md`.
-8. Provide a step-by-step task list for the user to approve before writing any code.
-9. Include in the plan: which files will be created/modified, which specs govern them, and which utilities from `docs/UTILITIES_REFERENCE.md` will be reused.
+8. Identify the required skills from the Feature-to-Skills mapping in `AGENTS.md`.
+9. Provide a step-by-step task list for the user to approve before writing any code.
+10. Include in the plan: which files will be created/modified, which specs govern them, and which utilities from `docs/UTILITIES_REFERENCE.md` will be reused.
+11. **If the feature involves database changes** (new tables, columns, constraints, data migrations):
+    - Read `docs/skills/database-migration.md` § Data Safety Assessment
+    - Include a **Data Safety Assessment** in the plan:
+      - What existing production data is affected?
+      - Risk level: 🟢 Low / 🟡 Medium / 🔴 High
+      - For 🟡/🔴: describe the data preservation and rollback strategy
+      - Can the migration fail on existing data? How is that handled?
+    - **Do NOT write any migration SQL until the plan is approved.**
 
 ## Phase 4: Verification Gate
 

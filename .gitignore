@@ -49,3 +49,7 @@ coverage/
 
 # ── AI Agent ──
 .gemini/
+.sessions/
+*.session.md
+.claude/homunculus/
+.claude/session-data/

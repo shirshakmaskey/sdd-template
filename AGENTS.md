@@ -13,10 +13,14 @@ docs/
 ├── UTILITIES_REFERENCE.md    ← DRY Bible — registry of all utility functions
 ├── DEAD_CODE_REFERENCES.md   ← Tracks deprecated code and unused mocks
 ├── adr/                      ← Architecture Decision Records (technology choices — FINAL)
+├── agents/                   ← Subagent definitions for task delegation
 ├── phases/                   ← Phased implementation guides (scope + acceptance tests)
+├── rules/                    ← Always-on behavioral guardrails
+├── skills/                   ← Step-by-step recipes for common tasks
 ├── specs/                    ← Engineering contracts (API, events, database, prompts)
 ├── roles/                    ← Conventions and patterns per engineering domain
-├── skills/                   ← Step-by-step recipes for common tasks
+├── sops/                     ← Standard Operating Procedures (deployment, backup, incident)
+├── templates/                ← Templates for session summaries, learned patterns
 └── workflows/                ← Agent workflow recipes (platform-agnostic)
 ```
 
@@ -236,12 +240,26 @@ Generate each spec **one at a time**, present to user, wait for approval.
 
 3. **Copy the resolved workflow files** from `docs/workflows/` to the platform-specific directory identified in step 1.
 
-4. **Update the platform config file** (if applicable):
-   - Cursor: Ensure `.cursorrules` references workflow files
-   - Claude: Ensure `CLAUDE.md` references workflow files
-   - Gemini: No extra config needed (auto-detected from `.agents/workflows/`)
+4. **Generate platform-specific config:**
 
-5. **Present to user for confirmation.**
+   **For Claude Code (`.claude/`):**
+   - `.claude/rules/` — Copy rule files from `docs/rules/`
+   - `.claude/skills/` — Copy skill files from `docs/skills/`
+   - `.claude/agents/` — Copy agent files from `docs/agents/`
+   - `.claude/hooks.json` — Memory persistence hooks (PreCompact, Stop, SessionStart) + verification hooks
+   - `.claude/settings.json` fragment — MCP recommendations and tool permissions
+   - `.claude/homunculus/instincts/` — Learned pattern files (created during development)
+
+   **For Antigravity/Gemini (`.gemini/`):**
+   - Reference skills via AGENTS.md (Antigravity reads it directly)
+   - Session memory via `.gemini/antigravity-ide/knowledge/` (native persistence)
+   - Skill-file equivalents of Claude hooks embedded in workflow files
+
+5. **Generate operational infrastructure:**
+   - Create `.sessions/` directory (gitignored) for session artifacts
+   - Populate SOPs from `docs/sops/TEMPLATE-*` with project-specific values
+
+6. **Present to user for confirmation.**
 
 ### Step 11: Finalize AGENTS.md
 
@@ -365,6 +383,7 @@ When a user asks you to build, modify, or fix something, follow this exact workf
 4. **Never modify an accepted ADR.** Create a superseding ADR instead.
 5. **Always use the consistent error response format** defined in the specs for error responses.
 6. **Always use `P{n}-T{nn}` naming** for E2E tests.
+7. **Never write or run database migrations without presenting a plan first.** All schema changes must include a Data Safety Assessment with risk level (🟢 Low / 🟡 Medium / 🔴 High). Present the plan, identify risks to existing data, and get explicit user approval.
 
 ### Architecture
 
@@ -447,11 +466,57 @@ When starting work on any task, read these files in order:
 1. **`docs/STATUS.md`** — understand the current state of the project
 2. **Phase README** — confirms scope and identifies relevant tests
 3. **Relevant spec files** — the contracts you must conform to
-4. **Relevant role files** — the conventions you must follow
-5. **Relevant skill files** — the step-by-step recipe to execute
-6. **`docs/UTILITIES_REFERENCE.md`** — check for existing utilities before writing new ones
-7. **`docs/DEAD_CODE_REFERENCES.md`** — avoid depending on deprecated code
-8. **Existing source code** — understand what's already built
+4. **Relevant rule files** (`docs/rules/`) — always-on behavioral guardrails
+5. **Relevant role files** — the conventions you must follow
+6. **Relevant skill files** — the step-by-step recipe to execute
+7. **`docs/UTILITIES_REFERENCE.md`** — check for existing utilities before writing new ones
+8. **`docs/DEAD_CODE_REFERENCES.md`** — avoid depending on deprecated code
+9. **Relevant agent files** (`docs/agents/`) — delegation patterns
+10. **Existing source code** — understand what's already built
+
+---
+
+## AI Efficiency Protocol
+
+> These rules optimize token usage, context management, and session productivity. Derived from battle-tested patterns.
+
+### Token Optimization
+
+- **Prefer CLI tools over MCPs** when both achieve the same result. MCPs consume context window for tool definitions.
+- **Use targeted file reads.** Read specific line ranges instead of entire files. Only read full files on first encounter.
+- **Minimize exploration context.** Research → save findings → compact → execute from plan.
+- **Route to cheapest sufficient model** for subtasks (formatting, summarization, boilerplate).
+- **Batch related tool calls.** Make independent calls in parallel, not sequentially.
+
+### Context Management
+
+- **Compact at logical boundaries,** not arbitrarily. Good boundaries: after research, after milestone completion, before context shifts.
+- **Before compacting, always save state** using the session-handoff skill.
+- **Monitor context budget.** Warn at 70% capacity. Suggest compaction at 80%.
+- **After compacting, load saved state** and confirm continuity before proceeding.
+
+### Memory Handoff Protocol
+
+- **At session end:** Generate a structured handoff summary (use `docs/templates/session-summary.md`).
+- **At session start:** Check for previous session summaries in `.sessions/` and load context.
+- **Format:** What was accomplished, key decisions, what worked vs. didn't, prioritized next steps.
+- **Storage:** Claude uses `~/.claude/session-data/{project}/`. Antigravity uses its knowledge system.
+
+### Research-First Development
+
+- **Always read existing code before writing new code.** Understand the current implementation.
+- **Check the utilities reference** before creating any new helper function.
+- **Verify spec contracts** before implementing. Field names, types, and status codes must match exactly.
+- **Check the dead code tracker** to avoid depending on deprecated code.
+
+### Business Pragmatism
+
+- **Think like a CTO, not just an engineer.** Every technical decision has a cost — development time, operational complexity, and opportunity cost.
+- **Fight over-engineering.** YAGNI: *"What concrete business need does this solve in the next 6 months?"*
+- **Consider the business stage.** Optimize for speed-to-market and learning from real users.
+- **Apply the "10x users" test.** Don't build for 1M users when you have 100. But flag things painful to migrate later.
+- **Cost is a feature.** A $50/month "good enough" solution beats a $500/month "perfect" one.
+- **Defend the user's time.** If it takes 3 weeks to build but saves 5 minutes per month, say so.
 
 ---
 
